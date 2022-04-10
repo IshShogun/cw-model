@@ -14,7 +14,7 @@ import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Transport;
 /**
  * A POJO containing the ScotlandYard game graph and the MrX's reveal moves
  */
-public final class GameSetup implements Serializable {
+public final class  GameSetup implements Serializable {
 	private static final long serialVersionUID = -4214739769363149939L;
 
 	/**

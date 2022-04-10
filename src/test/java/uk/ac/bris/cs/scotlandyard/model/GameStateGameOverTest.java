@@ -107,6 +107,8 @@ public class GameStateGameOverTest extends ParameterisedModelTestBase {
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
 		state = state.advance(taxi(MRX, 86, 103));
 		state = state.advance(taxi(BLUE, 85, 103)); // MrX captured at 103
+		System.out.println(mrX.location());
+		System.out.println(blue.location());
 		assertGameIsOver(state);
 	}
 
