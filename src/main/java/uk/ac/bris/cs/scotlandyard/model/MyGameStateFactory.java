@@ -82,6 +82,9 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 			return (GameState) move.accept(m);
 		}
+		int getMrXLocation(){
+			return mrX.location();
+		}
 
 		Player getPlayerFromPiece(Piece piece){
 			for(Player player: detectives){
@@ -153,7 +156,12 @@ public final class MyGameStateFactory implements Factory<GameState> {
 					mrX = mrX.at(move.destination);
 					HashSet<Piece> set = new HashSet();
 					//TODO add all detectives
+					for(Player detective: detectives){
+						//
+					}
+
 					set.addAll(remaining);
+
 					ImmutableSet<Piece> im = ImmutableSet.copyOf(set);
 					/*HashSet<LogEntry> log1 = new HashSet<>();
 					log1.addAll(log);
@@ -171,6 +179,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 				}
 				else{
 					Player player = getPlayerFromPiece(move.commencedBy());
+					//play w det directly not immutable
 					player = player.at(move.destination);
 					player = player.use(move.ticket);
 					List<Player> detectivesNew = new ArrayList<>();
@@ -180,7 +189,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 							else
 								detectivesNew.add(detective);
 						}
-					ImmutableList<Player> detectivesNewNew = ImmutableList.copyOf(detectivesNew);
+					//ImmutableList<Player> detectivesNewNew = ImmutableList.copyOf(detectivesNew);
 					/*Player player = getPlayerFromPiece(move.commencedBy());
 					player = player.at(move.destination);
 					player = player.use(move.ticket);
@@ -197,8 +206,11 @@ public final class MyGameStateFactory implements Factory<GameState> {
 					//ImmutableSet<Piece> im = ImmutableSet.copyOf(set);
 					//detectives.add(player);
 					mrX = mrX.give(move.ticket);
+					//detectives.clear();
+					//detectives.addAll(detectivesNew);
+					//detectives.add(player);
 					//detectives.
-					return new MyGameState(setup, remaining, log, mrX, detectivesNewNew);
+					return new MyGameState(setup, remaining, log, mrX, detectivesNew);
 
 				}
 				/*Player player = getPlayerFromPiece(move.commencedBy());
@@ -338,6 +350,10 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		}
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
+			if(remaining.isEmpty()){
+				ImmutableSet<Move> someoneWon = ImmutableSet.of();
+				return someoneWon;
+			}
 			List<Player> remainingPlayers = getRemainingPlayers(remaining);
 			HashSet<Move> moves = new HashSet<>();
 
@@ -366,34 +382,51 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			if (setup.moves.isEmpty()) throw new IllegalArgumentException("Moves is empty!");
 
 			HashSet<Piece> detectivesWin = new HashSet<>();
-			HashSet<Piece> noWinners = new HashSet<>();
+			//HashSet<Piece> noWinners = new HashSet<>();
 			for(Player player1 : detectives){
 				detectivesWin.add(player1.piece());
 			}
+			this.winner = ImmutableSet.of();
 			for (Player player : detectives) {
 				if (mrX.location() == player.location() || getPlayerTickets(mrX.piece()).isEmpty()) {
 					this.winner = ImmutableSet.copyOf(detectivesWin);
+					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
+					//ImmutableSet<Move> emptyMove = ImmutableSet.of();
+					this.remaining = emptyRemaining;
+					//this.moves = emptyMove;
 				}
-				if (mrX.location() != player.location()) {
-					this.winner = ImmutableSet.copyOf(noWinners);
-				}
-				//if detectives run out of moves, if mr can't move anymore
-
+				//if detectives run out of moves || if mr can't move anymore
+				//from remaining
 				HashSet<Move> availMoves = new HashSet<>();
+				HashSet<Move> MrXavailMoves = new HashSet<>();
 				for(Player player2 : detectives){
 					availMoves.addAll(makeSingleMoves(setup,detectives,player2,player2.location()));
 				}
-				if(availMoves.isEmpty())
+				if(availMoves.isEmpty()) {
 					this.winner = ImmutableSet.of(mrX.piece());
-				availMoves.addAll(getAvailableMoves());
-				Boolean check = availMoves.stream().allMatch(move -> move.commencedBy() == mrX.piece());
-				if(!check)
+					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
+					//ImmutableSet<Move> emptyMove = ImmutableSet.of();
+					this.remaining = emptyRemaining;
+					//this.moves = emptyMove;
+				}
+				MrXavailMoves.addAll(makeSingleMoves(setup,detectives,mrX,mrX.location()));
+				MrXavailMoves.addAll(makeDoubleMoves(setup,detectives,mrX,mrX.location()));
+				if(MrXavailMoves.isEmpty()){
+					this.winner = ImmutableSet.copyOf(detectivesWin);
+					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
+					//ImmutableSet<Move> emptyMove = ImmutableSet.of();
+					this.remaining = emptyRemaining;
+					//this.moves = emptyMove;
+				}
+
+				//Boolean check = availMoves.stream().allMatch(move -> move.commencedBy() == mrX.piece());
+				/*if(!check)
 					this.winner = ImmutableSet.of();
 				else
-					this.winner = ImmutableSet.of(mrX.piece());
+					this.winner = ImmutableSet.of(mrX.piece());*/
 
 			}
-			this.winner = ImmutableSet.of(mrX.piece());
+			//this.winner = ImmutableSet.of(mrX.piece());
 
 		}
 
