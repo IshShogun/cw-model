@@ -36,6 +36,12 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			//loc.add(player.location(), counter);
 			//counter++;
 		}
+		for(int i = 0; i<detectives.size();i++){
+			for(int j = i + 1; j < detectives.size(); j++){
+				if(detectives.get(i).equals(detectives.get(j)))
+					throw new IllegalArgumentException("duplicates");
+			}
+		}
 		for(Player player: detectives){
 			for(Player player2: detectives){
 				if(!player.equals(player2) && player.location() == player2.location())
@@ -197,7 +203,10 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 		@Override
 		public Optional<Integer> getDetectiveLocation(Piece.Detective detective) {
-			int i = detectives.indexOf(detective);
+			int i = detectives.indexOf(getPlayerFromPiece(detective));
+			if(i == -1){
+				return Optional.empty();
+			}
 			return Optional.of(detectives.get(i).location());
 		}
 
@@ -243,8 +252,13 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		public Optional<TicketBoard> getPlayerTickets(Piece piece) {
 			TicketBoard ticketBoard = new TB(piece);
 			Optional<TicketBoard> tb = Optional.of(ticketBoard);
+			if(!piece.isMrX()){
+				int i = detectives.indexOf(getPlayerFromPiece(piece));
+				if(i == -1){
+					return Optional.empty();
+				}
+			}
 			return tb;
-
 		}
 
 		@Override
@@ -277,11 +291,13 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			HashSet<Move> moves = new HashSet<>();
 
 			for(Player player: remainingPlayers){
-				moves.addAll(makeSingleMoves(setup, remainingPlayers, player, player.location()));
-				if(log.size() < 24)
-					moves.addAll(makeDoubleMoves(setup, remainingPlayers, player, player.location()));
+				makeSingleMoves(setup, detectives, player, player.location());
+				moves.addAll(makeSingleMoves(setup, detectives, player, player.location()));
+				if(!(log.size() + 1 == setup.moves.size())) {
+					makeDoubleMoves(setup, detectives, player, player.location());
+					moves.addAll(makeDoubleMoves(setup, detectives, player, player.location()));
+				}
 			}
-			//ImmutableSet<Move> iMoves = new ImmutableSet<>();
 			ImmutableSet<Move> iMoves = ImmutableSet.copyOf(moves);
 			return iMoves;
 		}
@@ -386,19 +402,39 @@ public final class MyGameStateFactory implements Factory<GameState> {
 						if (player.hasAtLeast(rTicket1, 1) || player.hasAtLeast(ScotlandYard.Ticket.SECRET, 1)) {
 
 							for (int finalDestination : setup.graph.adjacentNodes(destination)) {
-								int check = checkDestinationLocation(detectives, finalDestination);
-								if (check == 0)
-									continue;
+								for (ScotlandYard.Transport t2 : setup.graph.edgeValueOrDefault(destination, finalDestination, ImmutableSet.of())) {
+									int check = checkDestinationLocation(detectives, finalDestination);
+									if (check == 0)
+										continue;
 
-								ScotlandYard.Ticket rTicket2 = t.requiredTicket();
-								if (player.hasAtLeast(rTicket2, 1) || player.hasAtLeast(ScotlandYard.Ticket.SECRET, 1)) {
+									ScotlandYard.Ticket rTicket2 = t2.requiredTicket();
+									//2 secret
+									if (player.hasAtLeast(ScotlandYard.Ticket.SECRET, 2)) {
+										Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), ScotlandYard.Ticket.SECRET, destination, ScotlandYard.Ticket.SECRET, finalDestination);
+										set2.add(moves);
+									}
+									//1 rticket1 and 1 secret
+									if (player.hasAtLeast(ScotlandYard.Ticket.SECRET, 1) && player.hasAtLeast(rTicket1, 1)) {
+										Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), rTicket1, destination, ScotlandYard.Ticket.SECRET, finalDestination);
+										set2.add(moves);
+									}
+									//1 secret and 1 rticket2
+									if (player.hasAtLeast(ScotlandYard.Ticket.SECRET, 1) && player.hasAtLeast(rTicket2, 1)) {
+										Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), ScotlandYard.Ticket.SECRET, destination, rTicket2, finalDestination);
+										set2.add(moves);
+									}
+									//rticket1 and rticket2
+									if(rTicket1.equals(rTicket2)){
+										if (player.hasAtLeast(rTicket1, 2)){
+											Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), rTicket1, destination, rTicket2, finalDestination);
+											set2.add(moves);
+										}
+									} else if (player.hasAtLeast(rTicket1, 1) && player.hasAtLeast(rTicket2, 1)) {
+										Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), rTicket1, destination, rTicket2, finalDestination);
+										set2.add(moves);
+									}
 
-									Move.DoubleMove moves = new Move.DoubleMove(player.piece(), player.location(), rTicket1, destination, rTicket2, finalDestination);
-
-									set2.add(moves);
 								}
-
-
 							}
 						}
 					}

@@ -66,7 +66,7 @@ public class GameStateMrXAvailableMovesTest extends ParameterisedModelTestBase {
 
 		// no destination should end up at 116(blue) and no double move
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
-
+		state.getAvailableMoves();
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(
 				taxi(MRX, 104, 86),
 				secret(MRX, 104, 86));
@@ -76,6 +76,7 @@ public class GameStateMrXAvailableMovesTest extends ParameterisedModelTestBase {
 		var mrX = new Player(MRX, makeTickets(1, 1, 0, 2, 0), 104);
 		var blue = new Player(BLUE, defaultDetectiveTickets(), 117);
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
+		state.getAvailableMoves();
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(
 				// no repeated tickets with double move for taxi and bus because
 				// we only
@@ -137,7 +138,8 @@ public class GameStateMrXAvailableMovesTest extends ParameterisedModelTestBase {
 		GameState state = gameStateFactory.build(
 				new GameSetup(standardGraph(), ImmutableList.of(true)),
 				mrX, blue);
-
+		System.out.println(state.getMrXTravelLog().size());
+		System.out.println( state.getSetup().moves.size());
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(
 				taxi(MRX, 104, 86),
 				secret(MRX, 104, 86),
@@ -179,6 +181,7 @@ public class GameStateMrXAvailableMovesTest extends ParameterisedModelTestBase {
 
 		// 60 moves in total, note the permutation pattern and relation of DoubleMove to TicketMove
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
+		state.getAvailableMoves();
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(
 				taxi(MRX, 104, 86),
 				x2(MRX, 104, TAXI, 86, TAXI, 104),
