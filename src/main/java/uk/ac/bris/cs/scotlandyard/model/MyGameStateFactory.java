@@ -384,6 +384,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 			}
 
+			//ben messed up the merge
 			// TODO return the collection of moves
 			return set;
 		}
