@@ -118,6 +118,7 @@ public class GameStateGameOverTest extends ParameterisedModelTestBase {
 		var red = new Player(RED, makeTickets(0, 0, 0, 0, 0), 84);
 		var green = new Player(GREEN, defaultDetectiveTickets(), 102);
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue, red, green);
+		state.getAvailableMoves();
 		// MrX moves to 85, of which 2/3 connecting nodes are occupied by blue(68) and red(84)
 		state = state.advance(taxi(MRX, 103, 85));
 		// green then cuts MrX off by moving to 103, MrX is now cornered and cannot move
@@ -132,6 +133,7 @@ public class GameStateGameOverTest extends ParameterisedModelTestBase {
 		var green = new Player(GREEN, makeTickets(0, 0, 0, 0, 0), 41); // green is stuck from the beginning
 
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue, red, green);
+		state.getAvailableMoves();
 
 		state = state.advance(taxi(MRX, 40, 52)); // down to 1 taxi after this
 		state = state.advance(taxi(BLUE, 39, 51));

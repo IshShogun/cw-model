@@ -62,6 +62,7 @@ public class GameStateDetectivesAvailableMovesTest extends ParameterisedModelTes
 				mrX, red, green, blue, white, yellow);
 		state = state
 				.advance(x2(MRX, 106, TAXI, 105, BUS, 87));
+		state.getAvailableMoves();
 
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(taxi(RED, 91, 56),
 				taxi(RED, 91, 72),

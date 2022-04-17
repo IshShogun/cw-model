@@ -9,6 +9,8 @@ import org.junit.Test;
 import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 import uk.ac.bris.cs.scotlandyard.model.ScotlandYard.Transport;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.ac.bris.cs.scotlandyard.model.Piece.Detective.BLUE;
 import static uk.ac.bris.cs.scotlandyard.model.Piece.Detective.GREEN;
@@ -205,6 +207,9 @@ public class GameStateCreationTest extends ParameterisedModelTestBase {
 		var mrX = new Player(MRX, makeTickets(1, 2, 3, 4, 5), 1);
 		var blue = new Player(BLUE, makeTickets(5, 4, 3, 0, 0), 2);
 		GameState game = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
+		//Board.TicketBoard tb = game.getPlayerTickets(blue.piece());
+		Optional<Board.TicketBoard> tb = game.getPlayerTickets(mrX.piece());
+		System.out.print(tb);
 		assertTicketCount(game, MRX, 1, 2, 3, 4, 5);
 		assertTicketCount(game, BLUE, 5, 4, 3, 0, 0);
 	}

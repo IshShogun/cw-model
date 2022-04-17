@@ -212,8 +212,8 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 
 		class TB implements TicketBoard{
-			int bus;
 			int taxi;
+			int bus;
 			int underground;
 			int x2;
 			int secret;
@@ -229,18 +229,20 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			}
 			@Override
 			public int getCount(ScotlandYard.Ticket ticket){
-				if(ticket.getClass().getName().equals(ScotlandYard.Ticket.BUS.getClass().getName()))
+				if(ticket.toString().equals(ScotlandYard.Ticket.BUS.toString()))
 					return this.bus;
-				if(ticket.getClass().getName().equals(ScotlandYard.Ticket.TAXI.getClass().getName()))
+				if(ticket.toString().equals(ScotlandYard.Ticket.TAXI.toString()))
 					return this.taxi;
-				if(ticket.getClass().getName().equals(ScotlandYard.Ticket.DOUBLE.getClass().getName()))
+				if(ticket.toString().equals(ScotlandYard.Ticket.DOUBLE.toString()))
 					return this.x2;
-				if(ticket.getClass().getName().equals(ScotlandYard.Ticket.UNDERGROUND.getClass().getName()))
+				if(ticket.toString().equals(ScotlandYard.Ticket.UNDERGROUND.toString()))
 					return this.underground;
-				if(ticket.getClass().getName().equals(ScotlandYard.Ticket.SECRET.getClass().getName()))
-					return this.x2;
+				if(ticket.toString().equals(ScotlandYard.Ticket.SECRET.toString()))
+					return this.secret;
 				else
 					return -1;
+
+
 			}
 		}
 
@@ -283,13 +285,13 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		}
 		@Override
 		public ImmutableSet<Move> getAvailableMoves() {
-			if(remaining.isEmpty()){
+			if(remaining.isEmpty() && winner == null){
 				ImmutableSet<Move> someoneWon = ImmutableSet.of();
 				return someoneWon;
 			}
 			List<Player> remainingPlayers = getRemainingPlayers(remaining);
 			HashSet<Move> moves = new HashSet<>();
-
+			//TODO: replace with stream
 			for(Player player: remainingPlayers){
 				makeSingleMoves(setup, detectives, player, player.location());
 				moves.addAll(makeSingleMoves(setup, detectives, player, player.location()));
@@ -317,6 +319,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			if (setup.moves.isEmpty()) throw new IllegalArgumentException("Moves is empty!");
 
 			HashSet<Piece> detectivesWin = new HashSet<>();
+			HashSet<Piece>  noWin = new HashSet<>();
 			//HashSet<Piece> noWinners = new HashSet<>();
 			for(Player player1 : detectives){
 				detectivesWin.add(player1.piece());
