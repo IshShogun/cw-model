@@ -34,6 +34,7 @@ public class GameStateDetectivesAvailableMovesTest extends ParameterisedModelTes
 
 		GameState state = gameStateFactory.build(standard24MoveSetup(), mrX, blue);
 		state = state.advance(taxi(MRX, 104, 86));
+		state.getAvailableMoves();
 		assertThat(state.getAvailableMoves()).containsExactlyInAnyOrder(
 				underground(BLUE, 128, 89),
 				underground(BLUE, 128, 185),

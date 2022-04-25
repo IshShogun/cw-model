@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import uk.ac.bris.cs.scotlandyard.model.Board.GameState;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.ac.bris.cs.scotlandyard.model.Piece.Detective.BLUE;
 import static uk.ac.bris.cs.scotlandyard.model.Piece.Detective.GREEN;
@@ -159,6 +161,7 @@ public class GameStateGameOverTest extends ParameterisedModelTestBase {
 
 		state = state.advance(taxi(GREEN, 41, 40));
 		// no detectives can move at this point, allowing MrX to escape
+		state.getAvailableMoves();
 		assertGameIsNotOver(state);
 	}
 
