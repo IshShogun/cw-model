@@ -97,7 +97,9 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		int getMrXLocation(){
 			return mrX.location();
 		}
-
+		public Player getMrX(){
+			return this.mrX;
+		}
 		Player getPlayerFromPiece(Piece piece){
 			for(Player player: detectives){
 				if(player.piece().equals(piece))

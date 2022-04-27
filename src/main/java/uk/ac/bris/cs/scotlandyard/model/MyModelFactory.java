@@ -22,42 +22,33 @@ public final class MyModelFactory implements Factory<Model> {
 	                                      Player mrX,
 	                                      ImmutableList<Player> detectives) {
 		// TODO
-		throw new RuntimeException("Implement me!");
-
-
-		return new ObserveModel(setup, , ImmutableList.of(), mrX, observers );
+		ImmutableSet<Piece> remaining = ImmutableSet.of(mrX.piece());
+		ImmutableList<LogEntry> log = ImmutableList.of();
+		Board.GameState state = new MyGameState(setup,remaining,log,mrX,detectives);
+		List<Model.Observer> observers = new ArrayList<>();
+		return new ObserveModel(state,observers,mrX,detectives);
 	}
 
 }
-
 	final class ObserveModel extends MyGameState implements Model {
-		/*private GameSetup setup;
-		private ImmutableSet<Piece> remaining;
-		private ImmutableList<LogEntry> log;
-		private Player mrX;
-		private List<Player> detectives;
-		private ImmutableSet<Move> moves;
-		private ImmutableSet<Piece> winner;*/
-		private List<Model.Observer> observers;
-
-		public ObserveModel(GameSetup setup, ImmutableSet<Piece> remaining, ImmutableList<LogEntry> log, Player mrX, List<Player> detectives) {
-			super(setup, remaining, log, mrX, detectives);
+		public GameState gameState;
+		public List<Model.Observer> observers;
+		public ObserveModel(GameState state,List<Model.Observer> observers, Player mrX, List<Player> detectives ){
+			super(state.getSetup(),state.getPlayers(),state.getMrXTravelLog(),mrX,detectives);
+			this.gameState = new MyGameState(state.getSetup(),state.getPlayers(),state.getMrXTravelLog(),mrX,detectives);
+			this.observers = observers;
 		}
 
-		//ImmutableList<Player> dec = ImmutableList.copyOf(detectives);
 
 		@Nonnull
 		@Override
 		public Board getCurrentBoard() {
-			// getPlayerTickets();
-			 return null;
+			 return this.gameState;
 		}
 
 		@Override
 		public void registerObserver(@Nonnull Observer observer) {
 			observers.add(observer);
-
-
 		}
 
 		@Override
@@ -78,12 +69,17 @@ public final class MyModelFactory implements Factory<Model> {
 		public void chooseMove(@Nonnull Move move) {
 			// TODO Advance the model with move, then notify all observers of what what just happened.
 			//  you may want to use getWinner() to determine whether to send out Event.MOVE_MADE or Event.GAME_OVER
-			for(Model.Observer observer : observers){
-				observer.onModelChanged(getCurrentBoard(), Model.Observer.Event.MOVE_MADE);
-				if(!getWinner().isEmpty()) {
-					observer.onModelChanged(getCurrentBoard(), Model.Observer.Event.GAME_OVER);
+			this.gameState = advance(move);
+			observers.stream().forEach(observer -> {
+				observer.onModelChanged(getCurrentBoard(), Observer.Event.MOVE_MADE);
+				if(!getWinner().isEmpty())
+					observer.onModelChanged(getCurrentBoard(), Observer.Event.GAME_OVER);
+				if(gameState.getSetup().moves.size() == gameState.getMrXTravelLog().size()){
+					observer.onModelChanged(getCurrentBoard(), Observer.Event.GAME_OVER);
 				}
-			}
 
+			});
 		}
+
+
 	}
