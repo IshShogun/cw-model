@@ -94,9 +94,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 			return (GameState) move.accept(m);
 		}
-		int getMrXLocation(){
-			return mrX.location();
-		}
+
 		public Player getMrX(){
 			return this.mrX;
 		}
@@ -287,7 +285,6 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			return log;
 
 		}
-
 		@Override
 		public ImmutableSet<Piece> getWinner() {
 			return winner;
@@ -322,6 +319,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			return iMoves;
 		}
 
+
 		public MyGameState(
 				final GameSetup setup,
 				final ImmutableSet<Piece> remaining,
@@ -332,18 +330,16 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			this.remaining = remaining;
 			this.log = log;
 			this.mrX = mrX;
+			this.winner = getWinner();
 			this.detectives = detectives;
 			this.moves = getAvailableMoves();
 			if (setup.moves.isEmpty()) throw new IllegalArgumentException("Moves is empty!");
 			if(getAvailableMoves().isEmpty()){
 				Set<Piece> newRemaining = new HashSet<>();
 				newRemaining.add(mrX.piece());
-				//this.winner = ImmutableSet.of(mrX.piece());
 				this.remaining = ImmutableSet.copyOf(newRemaining);
 			}
 			HashSet<Piece> detectivesWin = new HashSet<>();
-			HashSet<Piece>  noWin = new HashSet<>();
-			//HashSet<Piece> noWinners = new HashSet<>();
 			for(Player player1 : detectives){
 				detectivesWin.add(player1.piece());
 			}
@@ -362,9 +358,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 				if (mrX.location() == player.location() || getPlayerTickets(mrX.piece()).isEmpty()) {
 					this.winner = ImmutableSet.copyOf(detectivesWin);
 					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
-					//ImmutableSet<Move> emptyMove = ImmutableSet.of();
 					this.remaining = emptyRemaining;
-					//this.moves = emptyMove;
 				}
 				//if detectives run out of moves || if mr can't move anymore
 				//from remaining
@@ -385,7 +379,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			}
 
 		}
-		private static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, List<Player> detectives, Player
+		public static Set<Move.SingleMove> makeSingleMoves(GameSetup setup, List<Player> detectives, Player
 				player, int source) {
 
 			// TODO create an empty collection of some sort, say, HashSet, to store all the SingleMove we generate
@@ -421,7 +415,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			return set;
 		}
 
-		private static Set<Move.DoubleMove> makeDoubleMoves(GameSetup setup, List<Player> detectives, Player player, int source) {
+		public static Set<Move.DoubleMove> makeDoubleMoves(GameSetup setup, List<Player> detectives, Player player, int source) {
 
 			HashSet<Move.DoubleMove> set2 = new HashSet<>();
 			if(player.hasAtLeast(ScotlandYard.Ticket.DOUBLE,1)) {
