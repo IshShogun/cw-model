@@ -29,17 +29,16 @@ public final class MyModelFactory implements Factory<Model> {
 		ImmutableList<LogEntry> log = ImmutableList.of();
 		Board.GameState state = new MyGameState(setup,remaining,log,mrX,detectives);
 		List<Model.Observer> observers = new ArrayList<>();
-		return new ObserveModel(state,observers,mrX,detectives);
+		return new ObserveModel(state,observers);
 	}
 
 }
-	final class ObserveModel extends MyGameState implements Model {
-		public GameState gameState;
+	final class ObserveModel implements Model {
+		public Board.GameState gameState;
 		public List<Model.Observer> observers;
 
-		public ObserveModel(GameState state,List<Model.Observer> observers, Player mrX, List<Player> detectives ){
-			super(state.getSetup(),state.getPlayers(),state.getMrXTravelLog(),mrX,detectives);
-			this.gameState = new MyGameState(state.getSetup(),state.getPlayers(),state.getMrXTravelLog(),mrX,detectives);
+		ObserveModel(Board.GameState state, List<Model.Observer> observers){
+			this.gameState = state;
 			this.observers = observers;
 		}
 
@@ -87,8 +86,8 @@ public final class MyModelFactory implements Factory<Model> {
 		public void chooseMove(@Nonnull Move move) {
 			// TODO Advance the model with move, then notify all observers of what what just happened.
 			//  you may want to use getWinner() to determine whether to send out Event.MOVE_MADE or Event.GAME_OVER
-			this.gameState = advance(move);
-			if (!gameState.getWinner().isEmpty()) {
+			this.gameState = gameState.advance(move);
+			if ((!gameState.getWinner().isEmpty())) {
 				observers.stream().forEach(observer -> {
 					System.out.println("I am here");
 					observer.onModelChanged(getCurrentBoard(), Observer.Event.GAME_OVER);

@@ -371,7 +371,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
 					this.remaining = emptyRemaining;
 				}
-				if(setup.moves.size() == getMrXTravelLog().size()){
+				if((setup.moves.size() == this.log.size()) && remaining.contains(mrX.piece())){
 					this.winner = ImmutableSet.of(mrX.piece());
 					ImmutableSet<Piece> emptyRemaining = ImmutableSet.of();
 					this.remaining = emptyRemaining;
