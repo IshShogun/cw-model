@@ -58,7 +58,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 
 
 
-	private final class MyGameState implements GameState {
+	public static class MyGameState implements GameState {
 		private GameSetup setup;
 		private ImmutableSet<Piece> remaining;
 		private ImmutableList<LogEntry> log;
@@ -102,8 +102,6 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			for(Player player: detectives){
 				if(player.piece().equals(piece))
 					return player;
-				/*else
-					return mrX;*/
 			}
 			return mrX;
 		}
@@ -233,7 +231,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 		}
 
 
-		class TB implements TicketBoard{
+		  class TB implements TicketBoard{
 			int taxi;
 			int bus;
 			int underground;
@@ -322,7 +320,7 @@ public final class MyGameStateFactory implements Factory<GameState> {
 			return iMoves;
 		}
 
-		private MyGameState(
+		public MyGameState(
 				final GameSetup setup,
 				final ImmutableSet<Piece> remaining,
 				final ImmutableList<LogEntry> log,
